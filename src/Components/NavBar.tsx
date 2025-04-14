@@ -1,22 +1,32 @@
-// src/components/Navbar.jsx
-import React from "react";
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import Button from './button';
+import { useThemeStore } from './theme';
 
-const Navbar = () => {
+const Navbar: React.FC = () => {
+  const darkMode = useThemeStore((state) => state.darkMode);
+  const toggleDarkMode = useThemeStore((state) => state.toggleDarkMode);
+
+
   return (
-    <nav className="bg-[#3251D0] text-white p-4 flex justify-between items-center">
-      <h1 className="text-xl font-bold">User Management</h1>
-      <div className="flex gap-4">
-        <button className="bg-white text-[#3251D0] px-4 py-2 rounded-md">
-          Create User
-        </button>
-        <button className="bg-red-500 text-[#ffffff] px-4 py-2 rounded-md">
-          Logout
-        </button>
-        <button className="bg-white text-[#3251D0] px-4 py-2 rounded-md">
-          <i className="fa fa-moon-o" aria-hidden="true"></i>
+    <div className="w-full bg-[#3251D0] dark:bg-gray-900 flex items-center justify-between p-4">
+      <h1 className="text-lg font-bold text-white">User Management</h1>
+      <div className="flex items-center space-x-3">
+        <Link to="/dashboard">
+          <Button variant="primary">Dashboard</Button>
+        </Link>
+        <Link to="/login">
+          <Button variant="secondary">Logout</Button>
+        </Link>
+        <button onClick={toggleDarkMode} className="p-2">
+          {darkMode ? (
+            <span role="img" aria-label="Light mode">🌞</span>
+          ) : (
+            <span role="img" aria-label="Dark mode">🌙</span>
+          )}
         </button>
       </div>
-    </nav>
+    </div>
   );
 };
 

@@ -1,25 +1,37 @@
-// src/App.jsx
-import React, { useEffect, useState } from "react";
-import SearchInput from "./Components/SearchInput";
-import UserGrid from "./Components/UserGrid";
-import Navbar from "./Components/NavBar";
-import { fetchUsers } from "./services/userService";
-import { User } from "./types/User";
+// src/App.tsx
+import React, { useEffect } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import UserGrid from './components/UserGrid';
+import LoginPage from './pages/LoginPage';
+import AuthenticatedLayout from './layouts/AuthenticatedLayout';
+import UserProfile from './pages/UserProfile';
+import { useThemeStore } from './components/theme'; 
 
-function App() {
-  const [users, setUsers] = useState<User[]>([]);
+const App: React.FC = () => {
+  const setDarkMode = useThemeStore((state) => state.setDarkMode);
 
   useEffect(() => {
-    fetchUsers().then((data) => setUsers(data));
-  }, []);
+    const savedTheme = localStorage.getItem('theme');
+    setDarkMode(savedTheme === 'dark');
+  }, [setDarkMode]);
 
   return (
-    <div className="bg-gray-100 min-h-screen p-4">
-      <Navbar />
-      <SearchInput />
-      <UserGrid users={users} />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        {/* Public Route */}
+        <Route path="/login" element={<LoginPage />} />
+
+        {/* Authenticated Routes */}
+        <Route path="/dashboard/*" element={<AuthenticatedLayout />}>
+          <Route index element={<UserGrid />} />
+          <Route path="profile/:id" element={<UserProfile />} />
+        </Route>
+
+        {/* Fallback */}
+        <Route path="*" element={<LoginPage />} />
+      </Routes>
+    </BrowserRouter>
   );
-}
+};
 
 export default App;

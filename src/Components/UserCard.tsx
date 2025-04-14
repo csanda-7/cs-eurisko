@@ -1,36 +1,40 @@
-// src/components/UserCard.tsx
-import React from "react";
-import { User } from "../types/User";
+import React from 'react';
+import Button from './button';
+
+interface User {
+  name: string;
+  email: string;
+  status: 'active' | 'locked';
+  dob: string;
+}
 
 interface UserCardProps {
   user: User;
 }
 
 const UserCard: React.FC<UserCardProps> = ({ user }) => {
-  const initials = `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`;
+  const initials = user.name
+    .split(' ')
+    .map((word) => word[0])
+    .join('')
+    .toUpperCase();
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-md border border-gray-200">
-      <div className="flex items-center gap-4">
-        <div className="w-12 h-12 bg-[#3251D0] text-white rounded-full flex items-center justify-center text-xl font-bold">
+    <div className="flex flex-col justify-between h-full p-4 space-y-3 transition-colors bg-white shadow-md dark:bg-gray-800 rounded-xl">
+      <div className="flex justify-center">
+        <div className="bg-[#3251D0] dark:bg-blue-600 rounded-full h-16 w-16 flex items-center justify-center text-white font-bold text-lg">
           {initials}
         </div>
-        <div>
-          <p className="font-semibold">{`${user.firstName} ${user.lastName}`}</p>
-          <p className="text-sm text-gray-600">Email: {user.email}</p>
-          <p className="text-sm">
-            Status: {user.status.toLowerCase()}
-          </p>
-          <p className="text-sm text-gray-600">Date of Birth: {user.dob}</p>
-        </div>
       </div>
-      <div className="flex justify-end gap-2 mt-4">
-        <button className="bg-[#3251D0] text-white px-3 py-1 rounded-md">
-          Edit
-        </button>
-        <button className="bg-red-500 text-white px-3 py-1 rounded-md">
-          Delete
-        </button>
+      <h2 className="text-lg font-bold text-center text-black dark:text-white">{user.name}</h2>
+      <div className="text-sm text-gray-600 dark:text-gray-300">
+        <p>Email: {user.email}</p>
+        <p>Status: {user.status}</p>
+        <p>Date of Birth: {user.dob}</p>
+      </div>
+      <div className="flex justify-end gap-2">
+        <Button variant="primary">Edit</Button>
+        <Button variant="secondary">Delete</Button>
       </div>
     </div>
   );

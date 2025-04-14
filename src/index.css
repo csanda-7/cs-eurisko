@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -24,13 +25,13 @@ a:hover {
   color: #535bf2;
 }
 
-body {
+html, body {
+  width: 100%;
+  height: 100%;
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  padding: 0;
 }
+
 
 h1 {
   font-size: 3.2em;
@@ -64,4 +65,10 @@ button:focus-visible {
     color: #747bff;
   }
 
+}
+
+
+/* Optional: Smooth transition for dark mode toggle */
+html {
+  transition: background-color 0.3s, color 0.3s;
 }
