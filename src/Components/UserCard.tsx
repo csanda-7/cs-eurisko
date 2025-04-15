@@ -1,5 +1,5 @@
 import React from 'react';
-import Button from './button';
+import Button from '../atoms/button/button';
 
 interface User {
   name: string;
@@ -33,9 +33,9 @@ const UserCard: React.FC<UserCardProps> = ({ user }) => {
         <p>Date of Birth: {user.dob}</p>
       </div>
       <div className="flex justify-end gap-2">
-        <Button variant="primary">Edit</Button>
-        <Button variant="secondary">Delete</Button>
-      </div>
+      <Button variant="primary">Edit</Button>
+      <Button variant="secondary">Delete</Button>
+</div>
     </div>
   );
 };

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import Button from './button';
+
 import { useThemeStore } from './theme';
+import Button from '../atoms/button/button';
 
 const Navbar: React.FC = () => {
   const darkMode = useThemeStore((state) => state.darkMode);
@@ -12,12 +13,12 @@ const Navbar: React.FC = () => {
     <div className="w-full bg-[#3251D0] dark:bg-gray-900 flex items-center justify-between p-4">
       <h1 className="text-lg font-bold text-white">User Management</h1>
       <div className="flex items-center space-x-3">
-        <Link to="/dashboard">
-          <Button variant="primary">Dashboard</Button>
-        </Link>
-        <Link to="/login">
-          <Button variant="secondary">Logout</Button>
-        </Link>
+      <Link to="/dashboard">
+      <Button variant="primary">Create User</Button>
+    </Link>
+    <Link to="/login">
+      <Button variant="secondary">Logout</Button>
+    </Link>
         <button onClick={toggleDarkMode} className="p-2">
           {darkMode ? (
             <span role="img" aria-label="Light mode">🌞</span>

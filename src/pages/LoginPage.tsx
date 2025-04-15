@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axiosInstance';
 import useAuthStore from '../store/authStore';
+import Button from '../atoms/button/button'; // Import the reusable Button component
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -13,26 +14,27 @@ const LoginPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     // Validate inputs
     if (!email || !password) {
       setError('Please fill in all fields.');
       return;
     }
-  
+
     setIsLoading(true);
     setError('');
-  
+
     try {
       const response = await api.post('/api/login', { email, password });
       console.log('Login Response:', response.data); // Log the response
-  
+
       if (response.data.result.message === 'success') {
         const { accessToken, expiresIn } = response.data.result.data;
-  
+
         // Store token and expiration time in Zustand store
         setAuth({ token: accessToken, expiresAt: expiresIn });
-        console.log("token>>>>",accessToken)
+        console.log('Token >>>>', accessToken);
+
         // Redirect to dashboard
         navigate('/dashboard');
       }
@@ -74,13 +76,14 @@ const LoginPage: React.FC = () => {
           </div>
 
           {/* Submit Button */}
-          <button
+          <Button
             type="submit"
+            variant="primary"
             disabled={isLoading}
-            className="w-full px-4 py-2 text-white bg-[#3251D0] rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3251D0]"
+            className="w-full"
           >
             {isLoading ? 'Logging in...' : 'Login'}
-          </button>
+          </Button>
         </form>
       </div>
     </div>
