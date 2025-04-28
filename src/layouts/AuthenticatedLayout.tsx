@@ -1,10 +1,9 @@
 // src/layouts/AuthenticatedLayout.tsx
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import Searchbar from '../components/SearchBar';
 import useAuth from '../hooks/useAuth';
-import { useThemeStore } from '../components/theme';
+import Navbar from '../Components/NavBar';
+import { useThemeStore } from '../Components/theme';
 
 const AuthenticatedLayout: React.FC = () => {
   const isAuthenticated = useAuth();
@@ -16,9 +15,8 @@ const AuthenticatedLayout: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white text-black dark:bg-black dark:text-white">
+    <div className="min-h-screen text-black bg-white dark:bg-black dark:text-white">
       <Navbar />
-      <Searchbar />
 
 
       <main className="px-6 py-4">

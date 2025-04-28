@@ -6,7 +6,6 @@ const api = axios.create({
   timeout: 5000,
 });
 
-
 api.interceptors.request.use((config) => {
   const { token } = useAuthStore.getState();
   if (token) {

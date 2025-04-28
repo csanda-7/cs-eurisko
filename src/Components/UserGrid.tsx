@@ -1,72 +1,87 @@
-// src/components/UserGrid.tsx
-import React, { useEffect, useState } from 'react';
-import UserCard from './UserCard';
+import React, { useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '../api/axiosInstance';
+import { toast } from 'react-toastify';
+import Searchbar from './SearchBar';
+import UserCard from './UserCard';
 import useAuthStore from '../store/authStore';
 
-interface ApiResponseUser {
-  id: string;
-  firstName: string;
-  lastName?: string;
-  email: string;
-  status: 'ACTIVE' | 'LOCKED';
-  dateOfBirth: string;
-}
-
-interface UserCardUser {
-  name: string;
-  email: string;
-  status: 'active' | 'locked';
-  dob: string;
-}
+// Fetch users
+const fetchUsers = async (search: string, token: string) => {
+  const response = await api.get('/api/users', {
+    params: { search },
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data.result.data.users;
+};
 
 const UserGrid: React.FC = () => {
-  const [users, setUsers] = useState<UserCardUser[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const { token } = useAuthStore(); 
+  const [searchTerm, setSearchTerm] = useState(''); // Local search term state
+  const queryClient = useQueryClient();
+  const { token } = useAuthStore();
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        if (!token) {
-          throw new Error('No token found');
-        }
+  // Fetch users using React Query
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['users', searchTerm], // Include search term in query key
+    queryFn: () => fetchUsers(searchTerm, token || ''), // Fetch users based on search term
+    enabled: !!token, // Only enable the query if `token` is valid
+  });
 
-        const response = await api.get('/api/users', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+  // Transform users for display
+  const transformedUsers = data?.map((user: any) => ({
+    id: user.id,
+    name: `${user.firstName} ${user.lastName || ''}`.trim(),
+    email: user.email,
+    status: user.status.toLowerCase() as 'active' | 'locked',
+    dob: user.dateOfBirth,
+  }));
 
-        const transformedUsers = response.data.result.data.users.map(
-          (user: ApiResponseUser): UserCardUser => ({
-            name: `${user.firstName} ${user.lastName || ''}`.trim(),
-            email: user.email,
-            status: user.status.toLowerCase() as 'active' | 'locked',
-            dob: user.dateOfBirth,
-          })
-        );
+  // Filter users based on search term
+  const filteredUsers = transformedUsers?.filter((user: any) =>
+    user.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-        setUsers(transformedUsers);
-      } catch (err: any) {
-        setError(err.message || 'Failed to fetch users');
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Handle delete action
+  const handleDelete = async (id: string) => {
+    try {
+      await api.delete(`/api/users/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      queryClient.invalidateQueries(['users'] as any); // Refresh the user list
+      toast.success('User deleted successfully');
+    } catch (err) {
+      toast.error('Failed to delete user');
+    }
+  };
 
-    fetchUsers();
-  }, [token]); 
+  // Loading state
+  if (isLoading) return <p className="text-center">Loading...</p>;
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p className="text-red-500">{error}</p>;
+  // Error state
+  if (error) return <p className="text-center text-red-500">Failed to fetch users</p>;
 
   return (
     <div className="w-full px-6 py-4">
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {users.map((user, index) => (
-          <UserCard key={index} user={user} />
-        ))}
-      </div>
+      {/* Search Bar */}
+      <Searchbar
+        value={searchTerm}
+        onChange={(value) => setSearchTerm(value)}
+      />
+
+      {/* User Grid */}
+      {filteredUsers && filteredUsers.length > 0 ? (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          {filteredUsers.map((user: any) => (
+            <UserCard
+              key={user.id}
+              user={user}
+              onDelete={() => handleDelete(user.id)} // Pass delete handler
+            />
+          ))}
+        </div>
+      ) : (
+        <p className="text-center text-gray-500 dark:text-gray-300">No users found.</p>
+      )}
     </div>
   );
 };

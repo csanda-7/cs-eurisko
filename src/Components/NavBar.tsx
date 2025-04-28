@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import { useThemeStore } from './theme';
 import Button from '../atoms/button/button';
+import { useThemeStore } from './theme';
 
 const Navbar: React.FC = () => {
   const darkMode = useThemeStore((state) => state.darkMode);
@@ -13,7 +13,7 @@ const Navbar: React.FC = () => {
     <div className="w-full bg-[#3251D0] dark:bg-gray-900 flex items-center justify-between p-4">
       <h1 className="text-lg font-bold text-white">User Management</h1>
       <div className="flex items-center space-x-3">
-      <Link to="/dashboard">
+      <Link to="/dashboard/new">
       <Button variant="primary">Create User</Button>
     </Link>
     <Link to="/login">
